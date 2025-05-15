@@ -56,22 +56,26 @@ public class TodoItem {
     }
 
     public void setTitle(String title) {
+        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException("title can't be null or empty");
         this.title = title;
     }
 
     public void setDescription(String description) {
+        if (description == null || description.trim().isEmpty()) throw new IllegalArgumentException("description can't be null or empty");
         this.description = description;
+    }
+
+    public void setDeadLine(LocalDate deadLine) {
+        if (deadLine == null || LocalDate.now().isAfter(deadLine)) throw new IllegalArgumentException("deadLine can't be null or before today's date");
+        this.deadLine = deadLine;
     }
 
     public void setDone(boolean done) {
         this.done = done;
     }
 
-    public void setDeadLine(LocalDate deadLine) {
-        this.deadLine = deadLine;
-    }
-
     public void setAssigneeId(int assigneeId) {
+        if(assigneeId <= 0) throw new IllegalArgumentException("assigneeId can't be <= 0");
         this.assigneeId = assigneeId;
     }
 
