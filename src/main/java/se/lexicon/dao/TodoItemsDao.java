@@ -4,6 +4,7 @@ import se.lexicon.model.Person;
 import se.lexicon.model.TodoItem;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TodoItemsDao {
 
@@ -11,7 +12,7 @@ public interface TodoItemsDao {
 
     List<TodoItem> findAll();
 
-    TodoItem findById(int id);
+    Optional<TodoItem> findById(int id);
 
     List<TodoItem> findByDoneStatus(boolean done);
 

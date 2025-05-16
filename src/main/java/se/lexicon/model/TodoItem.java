@@ -10,23 +10,33 @@ public class TodoItem {
     private String description;
     private LocalDate deadLine;
     private boolean done;
-    private int assigneeId;
+    private Integer assigneeId;
 
-    //constructors
-    public TodoItem(String title, String description, LocalDate deadLine, boolean done, int assigneeId) {
-        this.title = title;
-        this.description = description;
-        this.deadLine = deadLine;
-        this.done = done;
-        this.assigneeId = assigneeId;
+    //constructor for creating todoItems
+    public TodoItem(String title, String description, LocalDate deadLine, boolean done, Integer assigneeId) {
+        setTitle(title);
+        setDescription(description);
+        setDeadLine(deadLine);
+        setDone(done);
+        setAssigneeId(assigneeId);
     }
 
-    public TodoItem(int id, String title, String description, LocalDate deadLine, boolean done, int assigneeId) {
+    //constructor for creating unassigned todoItems
+    public TodoItem(String title, String description, LocalDate deadLine, boolean done) {
+        setTitle(title);
+        setDescription(description);
+        setDeadLine(deadLine);
+        setDone(done);
+        this.assigneeId = null;
+    }
+
+    //constructor for retrieving data
+    public TodoItem(int id, String title, String description, LocalDate deadLine, boolean done, Integer assigneeId) {
         this.id = id;
-        this.title = title;
-        this.description = description;
-        this.deadLine = deadLine;
-        this.done = done;
+        setTitle(title);
+        setDescription(description);
+        setDeadLine(deadLine);
+        setDone(done);
         this.assigneeId = assigneeId;
     }
 
@@ -51,8 +61,12 @@ public class TodoItem {
         return done;
     }
 
-    public int getAssigneeId() {
+    public Integer getAssigneeId() {
         return assigneeId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setTitle(String title) {
@@ -74,7 +88,7 @@ public class TodoItem {
         this.done = done;
     }
 
-    public void setAssigneeId(int assigneeId) {
+    public void setAssigneeId(Integer assigneeId) {
         if(assigneeId <= 0) throw new IllegalArgumentException("assigneeId can't be <= 0");
         this.assigneeId = assigneeId;
     }

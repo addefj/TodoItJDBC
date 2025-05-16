@@ -7,12 +7,13 @@ public class Person {
     private String firstName;
     private String lastName;
 
-    //constructors
+    //constructor for creating person
     public Person(String firstName, String lastName) {
         setFirstName(firstName);
         setLastName(lastName);
     }
 
+    //constructor for retrieving data
     public Person(int id, String firstName, String lastName) {
         this.id = id;
         setFirstName(firstName);

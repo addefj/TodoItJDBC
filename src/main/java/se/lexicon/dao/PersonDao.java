@@ -5,7 +5,7 @@ import se.lexicon.model.Person;
 import java.util.List;
 import java.util.Optional;
 
-public interface PeopleDao {
+public interface PersonDao {
 
     Person create(Person person);
 

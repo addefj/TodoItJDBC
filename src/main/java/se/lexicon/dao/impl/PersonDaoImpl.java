@@ -1,19 +1,19 @@
 package se.lexicon.dao.impl;
 
-import se.lexicon.dao.PeopleDao;
+import se.lexicon.dao.PersonDao;
 import se.lexicon.model.Person;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class PeopleDaoImpl implements PeopleDao {
+public class PersonDaoImpl implements PersonDao {
 
     //fields
     private Connection connection;
 
     //constructor
-    public PeopleDaoImpl(Connection connection) {
+    public PersonDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
