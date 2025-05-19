@@ -171,12 +171,9 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
 
         ArrayList<TodoItem> TodoItemList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM todo_item ti JOIN person p ON ti.assignee_id = p.person_id WHERE person_id = ?";
-        //String sqlQuery = "SELECT * FROM todo_item ti JOIN person p ON ti.assignee_id = p.person_id WHERE first_name = ? AND last_name = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             preparedStatement.setInt(1, person.getId());
-            //preparedStatement.setString(1, person.getFirstName());
-            //preparedStatement.setString(2, person.getLastName());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
 
