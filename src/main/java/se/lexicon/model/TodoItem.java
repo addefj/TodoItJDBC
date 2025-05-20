@@ -10,16 +10,7 @@ public class TodoItem {
     private String description;
     private LocalDate deadLine;
     private boolean done;
-    private Integer assigneeId;
-
-    //constructor for creating todoItems
-    public TodoItem(String title, String description, LocalDate deadLine, boolean done, Integer assigneeId) {
-        setTitle(title);
-        setDescription(description);
-        setDeadLine(deadLine);
-        setDone(done);
-        setAssigneeId(assigneeId);
-    }
+    private Person assignee;
 
     //constructor for creating unassigned todoItems
     public TodoItem(String title, String description, LocalDate deadLine, boolean done) {
@@ -27,17 +18,18 @@ public class TodoItem {
         setDescription(description);
         setDeadLine(deadLine);
         setDone(done);
-        this.assigneeId = null;
+    }
+
+    //constructor for creating todoItems
+    public TodoItem(String title, String description, LocalDate deadLine, boolean done, Person assignee) {
+        this(title, description, deadLine, done);
+        setAssignee(assignee);
     }
 
     //constructor for retrieving data
-    public TodoItem(int id, String title, String description, LocalDate deadLine, boolean done, Integer assigneeId) {
+    public TodoItem(int id, String title, String description, LocalDate deadLine, boolean done, Person assignee) {
+        this(title, description, deadLine, done, assignee);
         this.id = id;
-        setTitle(title);
-        setDescription(description);
-        setDeadLine(deadLine);
-        setDone(done);
-        this.assigneeId = assigneeId;
     }
 
     //methods
@@ -61,8 +53,8 @@ public class TodoItem {
         return done;
     }
 
-    public Integer getAssigneeId() {
-        return assigneeId;
+    public Person getAssignee() {
+        return assignee;
     }
 
     public void setId(int id) {
@@ -88,9 +80,8 @@ public class TodoItem {
         this.done = done;
     }
 
-    public void setAssigneeId(Integer assigneeId) {
-        if(assigneeId <= 0) throw new IllegalArgumentException("assigneeId can't be <= 0");
-        this.assigneeId = assigneeId;
+    public void setAssignee(Person assignee) {
+        this.assignee = assignee;
     }
 
     @Override
@@ -101,7 +92,7 @@ public class TodoItem {
                 ", description='" + description + '\'' +
                 ", deadLine=" + deadLine +
                 ", done=" + done +
-                ", assigneeId=" + assigneeId +
+                ", assignee=" + assignee +
                 '}';
     }
 }

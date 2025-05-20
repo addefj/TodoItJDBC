@@ -23,33 +23,31 @@ public class Main {
             TodoItemsDao todoItemsDao = new TodoItemsDaoImpl(mySQLConnection);
 
             //testing to create a person to db
-            //Person person = new Person("Lovisa","Svensson");
-            //Person createdPerson = personDao.create(new Person("John", "Svensson"));
-            //Person createdPerson = personDao.create(person);
-            //System.out.println("Created person: " + createdPerson);
-            //System.out.println("Person created successfully!");
+//            Person createdPerson = personDao.create(new Person("Nils", "Larsson"));
+//            System.out.println("Created person: " + createdPerson);
+//            System.out.println("Person created successfully!");
 
 
 
 
             //testing findAll()
-            //System.out.println(personDaoImpl.findAll());
+            System.out.println(personDao.findAll());
+            System.out.println("---------");
 
             //testing findById()
-            /*
-            Optional<Person> foundPerson = personDao.findById(3);
-            if(foundPerson.isPresent()){
-                System.out.println(foundPerson.get());
-            } else {
-                System.out.println("Person not found");
-            }
-             */
+//            Optional<Person> foundPerson = personDao.findById(3);
+//            if(foundPerson.isPresent()){
+//                System.out.println(foundPerson.get());
+//            } else {
+//                System.out.println("Person not found");
+//            }
+
 
             //testing findByName()
-            //System.out.println(personDao.findByName("John Svensson"));
+            System.out.println(personDao.findByName("Svensson"));
 
             //testing update() person
-            //personDao.update(new Person(5, "Ebba", "Nilsson"));
+            //personDao.update(new Person(5, "Ebba", "Larsson"));
 
 
             //testing deleteById()
@@ -59,25 +57,25 @@ public class Main {
 
             //testing creating todoItem
 
-            //TodoItem item = new TodoItem("garden", "cutting grass", LocalDate.of(2025, 5, 19), false);
+            //TodoItem item = new TodoItem("cleaning", "kitchen, bathroom", LocalDate.now().plusDays(3), true, personDao.findById(2).get());
             //System.out.println("Created todoItem: " + todoItemsDao.create(item));
 
-
             //testing findAll()
-            //System.out.println(todoItemsDao.findAll());
+            System.out.println(todoItemsDao.findAll());
+            System.out.println("--------");
 
             //testing findById()
-            /*
-            Optional<TodoItem> foundTodoItem = todoItemsDao.findById(1);
-            if(foundTodoItem.isPresent()){
-                System.out.println(foundTodoItem.get());
-            } else {
-                System.out.println("TodoItem not found");
-            }
-             */
+
+//            Optional<TodoItem> foundTodoItem = todoItemsDao.findById(1);
+//            if(foundTodoItem.isPresent()){
+//                System.out.println(foundTodoItem.get());
+//            } else {
+//                System.out.println("TodoItem not found");
+//            }
+
 
             //testing findByDoneStatus()
-            //System.out.println(todoItemsDao.findByDoneStatus(true));
+            //System.out.println(todoItemsDao.findByDoneStatus(done));
 
             //testing findByAssignee() Id
             //System.out.println(todoItemsDao.findByAssignee(2));
@@ -87,39 +85,21 @@ public class Main {
 //            personDao.create(p);
 //            System.out.println(p);
 //            System.out.println("------------------");
-//            todoItemsDao.create(new TodoItem("Task 1", "Description 1", LocalDate.now().plusDays(3), false, p.getId()));
-//            todoItemsDao.create(new TodoItem("Task 2", "Description 2", LocalDate.now().plusDays(7), false, p.getId()));
+//            todoItemsDao.create(new TodoItem("Task 1", "Description 1", LocalDate.now().plusDays(3), false, p));
+//            todoItemsDao.create(new TodoItem("Task 2", "Description 2", LocalDate.now().plusDays(7), false, p));
 //            System.out.println(todoItemsDao.findByAssignee(p));
 //            System.out.println("------------------");
 
-            // 1. Get existing person by ID (for example, person with ID = 1)
-//            Optional<Person> optionalPerson = personDao.findById(2);
-//
-//            if (optionalPerson.isPresent()) {
-//                Person existingPerson = optionalPerson.get();
-//
-//                // 2. Find all todo items assigned to this person
-//                List<TodoItem> items = todoItemsDao.findByAssignee(existingPerson);
-//
-//                // 3. Print the results
-//                System.out.println("TodoItems assigned to: " + existingPerson.getFirstName() + " " + existingPerson.getLastName());
-//                for (TodoItem item : items) {
-//                    System.out.println(item);
-//                }
-//
-//            } else {
-//                System.out.println("❌ Person with ID 1 not found in database.");
-//            }
 
             //testing findByUnassignedTodoItems
             //System.out.println(todoItemsDao.findByUnassignedTodoItems());
 
             //testing update() todoItem
-            //todoItemsDao.update(new TodoItem(9, "garden", "cutting grass, trim hedges", LocalDate.of(2025, 5, 19), false, null));
+            //todoItemsDao.update(new TodoItem(1, "garden", "cutting grass, trim hedges", LocalDate.now().plusDays(2), false, null));
 
             //testing deleteById()
-            //boolean successfulDelete = todoItemsDao.deleteById(8);
-            //if(successfulDelete) System.out.println("todoItem deleted successfully!");
+//            boolean successfulDelete = todoItemsDao.deleteById(2);
+//            if(successfulDelete) System.out.println("todoItem deleted successfully!");
 
 
         } catch (SQLException e) {
