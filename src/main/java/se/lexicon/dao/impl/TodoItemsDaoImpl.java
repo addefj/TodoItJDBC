@@ -55,7 +55,6 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
     @Override
     public ArrayList<TodoItem> findAll() {
         ArrayList<TodoItem> todoItemList = new ArrayList<>();
-
         String sqlQuery = "SELECT * FROM todo_item ti LEFT JOIN person p ON ti.assignee_id = p.person_id";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {

@@ -47,7 +47,9 @@ public class PersonDaoImpl implements PersonDao {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            personList = addPersonsToList(resultSet);
+            while (resultSet.next()) {
+                personList.add(createPersonFromDB(resultSet));
+            }
 
         } catch (SQLException e) {
             System.err.println("❌Error finding all persons: " + e.getMessage());
@@ -65,12 +67,7 @@ public class PersonDaoImpl implements PersonDao {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 if (resultSet.next()) {
-                    Person person = new Person(
-                            resultSet.getInt("person_id"),
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name")
-                    );
-                    return Optional.of(person);
+                    return Optional.of(createPersonFromDB(resultSet));
                 }
             }
 
@@ -91,9 +88,11 @@ public class PersonDaoImpl implements PersonDao {
             preparedStatement.setString(1, "%" + name + "%");
             preparedStatement.setString(2, "%" + name + "%");
 
-            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    personList.add(createPersonFromDB(resultSet));
+                }
 
-                personList = addPersonsToList(resultSet);
             }
         } catch (SQLException e) {
             System.err.println("❌Error finding person: " + e.getMessage());
@@ -133,16 +132,12 @@ public class PersonDaoImpl implements PersonDao {
         return false;
     }
 
-    public ArrayList<Person> addPersonsToList(ResultSet resultSet) throws SQLException {
-        ArrayList<Person> personList = new ArrayList<>();
-        while (resultSet.next()) {
-            personList.add(new Person(
-                    resultSet.getInt("person_id"),
-                    resultSet.getString("first_name"),
-                    resultSet.getString("last_name")
-            ));
-        }
-        return personList;
+    public Person createPersonFromDB(ResultSet resultSet) throws SQLException {
+        return new Person(
+                resultSet.getInt("person_id"),
+                resultSet.getString("first_name"),
+                resultSet.getString("last_name")
+        );
     }
 
 }
