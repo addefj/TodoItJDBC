@@ -60,29 +60,8 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             ResultSet resultSet = preparedStatement.executeQuery();
-
             while (resultSet.next()) {
-
-                Person assignee = null;
-                int personId = resultSet.getInt("person_id");
-                if (!resultSet.wasNull()) {
-                    assignee = new Person(
-                            personId,
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name")
-                    );
-                }
-
-                TodoItem item = new TodoItem(
-                        resultSet.getInt("todo_id"),
-                        resultSet.getString("title"),
-                        resultSet.getString("description"),
-                        resultSet.getDate("deadline").toLocalDate(),
-                        resultSet.getBoolean("done"),
-                        assignee
-                );
-
-                todoItemList.add(item);
+                todoItemList.add(createTodoItemFromDB(resultSet));
             }
 
         } catch (SQLException e) {
@@ -101,25 +80,7 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
 
                 if (resultSet.next()) {
-                    Person assignee = null;
-                    int personId = resultSet.getInt("person_id");
-                    if (!resultSet.wasNull()) {
-                        assignee = new Person(
-                                personId,
-                                resultSet.getString("first_name"),
-                                resultSet.getString("last_name")
-                        );
-                    }
-
-                    TodoItem item = new TodoItem(
-                            resultSet.getInt("todo_id"),
-                            resultSet.getString("title"),
-                            resultSet.getString("description"),
-                            resultSet.getDate("deadline").toLocalDate(),
-                            resultSet.getBoolean("done"),
-                            assignee
-                    );
-                    return Optional.of(item);
+                    return Optional.of(createTodoItemFromDB(resultSet));
                 }
             }
 
@@ -140,27 +101,8 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
             preparedStatement.setBoolean(1, done);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
                 while (resultSet.next()) {
-                    Person assignee = null;
-                    int personId = resultSet.getInt("person_id");
-                    if (!resultSet.wasNull()) {
-                        assignee = new Person(
-                                personId,
-                                resultSet.getString("first_name"),
-                                resultSet.getString("last_name")
-                        );
-                    }
-
-                    TodoItem item = new TodoItem(
-                            resultSet.getInt("todo_id"),
-                            resultSet.getString("title"),
-                            resultSet.getString("description"),
-                            resultSet.getDate("deadline").toLocalDate(),
-                            resultSet.getBoolean("done"),
-                            assignee
-                    );
-                    todoItemList.add(item);
+                    todoItemList.add(createTodoItemFromDB(resultSet));
                 }
             }
 
@@ -182,27 +124,8 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
             preparedStatement.setInt(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
                 while (resultSet.next()) {
-                    Person assignee = null;
-                    int personId = resultSet.getInt("person_id");
-                    if (!resultSet.wasNull()) {
-                        assignee = new Person(
-                                personId,
-                                resultSet.getString("first_name"),
-                                resultSet.getString("last_name")
-                        );
-                    }
-
-                    TodoItem item = new TodoItem(
-                            resultSet.getInt("todo_id"),
-                            resultSet.getString("title"),
-                            resultSet.getString("description"),
-                            resultSet.getDate("deadline").toLocalDate(),
-                            resultSet.getBoolean("done"),
-                            assignee
-                    );
-                    todoItemList.add(item);
+                    todoItemList.add(createTodoItemFromDB(resultSet));
                 }
             }
 
@@ -225,27 +148,8 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
             preparedStatement.setInt(1, person.getId());
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-
                 while (resultSet.next()) {
-                    Person assignee = null;
-                    int personId = resultSet.getInt("person_id");
-                    if (!resultSet.wasNull()) {
-                        assignee = new Person(
-                                personId,
-                                resultSet.getString("first_name"),
-                                resultSet.getString("last_name")
-                        );
-                    }
-
-                    TodoItem item = new TodoItem(
-                            resultSet.getInt("todo_id"),
-                            resultSet.getString("title"),
-                            resultSet.getString("description"),
-                            resultSet.getDate("deadline").toLocalDate(),
-                            resultSet.getBoolean("done"),
-                            assignee
-                    );
-                    todoItemList.add(item);
+                    todoItemList.add(createTodoItemFromDB(resultSet));
                 }
             }
         } catch (SQLException e) {
@@ -325,4 +229,27 @@ public class TodoItemsDaoImpl implements TodoItemsDao {
         }
         return false;
     }
+
+    public TodoItem createTodoItemFromDB (ResultSet resultSet) throws SQLException {
+        Person assignee = null;
+        int personId = resultSet.getInt("person_id");
+        if (!resultSet.wasNull()) {
+            assignee = new Person(
+                    personId,
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name")
+            );
+        }
+
+        return new TodoItem(
+                resultSet.getInt("todo_id"),
+                resultSet.getString("title"),
+                resultSet.getString("description"),
+                resultSet.getDate("deadline").toLocalDate(),
+                resultSet.getBoolean("done"),
+                assignee
+        );
+    }
+
+
 }

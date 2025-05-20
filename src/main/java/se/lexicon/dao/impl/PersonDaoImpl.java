@@ -47,13 +47,7 @@ public class PersonDaoImpl implements PersonDao {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                personList.add(new Person(
-                        resultSet.getInt("person_id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name")
-                ));
-            }
+            personList = addPersonsToList(resultSet);
 
         } catch (SQLException e) {
             System.err.println("❌Error finding all persons: " + e.getMessage());
@@ -99,13 +93,7 @@ public class PersonDaoImpl implements PersonDao {
 
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
 
-                while (resultSet.next()) {
-                    personList.add(new Person(
-                            resultSet.getInt("person_id"),
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name")
-                    ));
-                }
+                personList = addPersonsToList(resultSet);
             }
         } catch (SQLException e) {
             System.err.println("❌Error finding person: " + e.getMessage());
@@ -143,6 +131,18 @@ public class PersonDaoImpl implements PersonDao {
             System.err.println("❌ Error deleting person: " + e.getMessage());
         }
         return false;
+    }
+
+    public ArrayList<Person> addPersonsToList(ResultSet resultSet) throws SQLException {
+        ArrayList<Person> personList = new ArrayList<>();
+        while (resultSet.next()) {
+            personList.add(new Person(
+                    resultSet.getInt("person_id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name")
+            ));
+        }
+        return personList;
     }
 
 }

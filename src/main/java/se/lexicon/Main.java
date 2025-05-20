@@ -44,7 +44,7 @@ public class Main {
 
 
             //testing findByName()
-           // System.out.println(personDao.findByName("Larsson"));
+            System.out.println(personDao.findByName("Svensson"));
 
             //testing update() person
             //personDao.update(new Person(5, "Ebba", "Larsson"));
