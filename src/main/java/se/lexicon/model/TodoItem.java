@@ -12,16 +12,6 @@ public class TodoItem {
     private boolean done;
     private Person assignee;
 
-    //todo overload constructors with this()
-    //constructor for creating todoItems
-    public TodoItem(String title, String description, LocalDate deadLine, boolean done, Person assignee) {
-        setTitle(title);
-        setDescription(description);
-        setDeadLine(deadLine);
-        setDone(done);
-        setAssignee(assignee);
-    }
-
     //constructor for creating unassigned todoItems
     public TodoItem(String title, String description, LocalDate deadLine, boolean done) {
         setTitle(title);
@@ -30,14 +20,16 @@ public class TodoItem {
         setDone(done);
     }
 
+    //constructor for creating todoItems
+    public TodoItem(String title, String description, LocalDate deadLine, boolean done, Person assignee) {
+        this(title, description, deadLine, done);
+        setAssignee(assignee);
+    }
+
     //constructor for retrieving data
     public TodoItem(int id, String title, String description, LocalDate deadLine, boolean done, Person assignee) {
+        this(title, description, deadLine, done, assignee);
         this.id = id;
-        setTitle(title);
-        setDescription(description);
-        setDeadLine(deadLine);
-        setDone(done);
-        setAssignee(assignee);
     }
 
     //methods

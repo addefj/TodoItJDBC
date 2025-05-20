@@ -15,9 +15,8 @@ public class Person {
 
     //constructor for retrieving data
     public Person(int id, String firstName, String lastName) {
+        this(firstName, lastName);
         this.id = id;
-        setFirstName(firstName);
-        setLastName(lastName);
     }
 
     //methods
