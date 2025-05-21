@@ -1,18 +1,11 @@
 package se.lexicon.dao;
-
 import se.lexicon.model.Person;
 import se.lexicon.model.TodoItem;
-
 import java.util.List;
-import java.util.Optional;
 
-public interface TodoItemsDao {
+public interface TodoItemsDao extends BaseDao<TodoItem> {
 
     TodoItem create(TodoItem todoItem);
-
-    List<TodoItem> findAll();
-
-    Optional<TodoItem> findById(int id);
 
     List<TodoItem> findByDoneStatus(boolean done);
 
@@ -23,6 +16,4 @@ public interface TodoItemsDao {
     List<TodoItem> findByUnassignedTodoItems();
 
     TodoItem update(TodoItem todoItem);
-
-    boolean deleteById(int id);
 }

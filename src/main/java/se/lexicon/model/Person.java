@@ -50,7 +50,7 @@ public class Person {
 
     @Override
     public String toString() {
-        return "\nPerson{" +
+        return "Person{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

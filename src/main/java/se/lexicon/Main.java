@@ -1,5 +1,4 @@
 package se.lexicon;
-
 import se.lexicon.dao.PersonDao;
 import se.lexicon.dao.TodoItemsDao;
 import se.lexicon.dao.impl.PersonDaoImpl;
@@ -7,11 +6,8 @@ import se.lexicon.dao.impl.TodoItemsDaoImpl;
 import se.lexicon.db.MySQLConnection;
 import se.lexicon.model.Person;
 import se.lexicon.model.TodoItem;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 public class Main {
@@ -22,36 +18,38 @@ public class Main {
             PersonDao personDao = new PersonDaoImpl(mySQLConnection);
             TodoItemsDao todoItemsDao = new TodoItemsDaoImpl(mySQLConnection);
 
+
             //testing to create a person to db
 //            Person createdPerson = personDao.create(new Person("Nils", "Larsson"));
 //            System.out.println("Created person: " + createdPerson);
 //            System.out.println("Person created successfully!");
 
-
-
-
             //testing findAll()
-            System.out.println(personDao.findAll());
-            System.out.println("---------");
+            personDao.findAll().forEach(System.out::println);
+            System.out.println("---------------");
+            todoItemsDao.findAll().forEach(System.out::println);
+            System.out.println("---------------");
 
             //testing findById()
-//            Optional<Person> foundPerson = personDao.findById(3);
-//            if(foundPerson.isPresent()){
-//                System.out.println(foundPerson.get());
-//            } else {
-//                System.out.println("Person not found");
-//            }
+            Optional<Person> foundPerson = personDao.findById(1);
+            foundPerson.ifPresent(System.out::println);
+            System.out.println("---------------");
+            Optional<TodoItem> foundTodoItem = todoItemsDao.findById(1);
+            foundTodoItem.ifPresent(System.out::println);
+            System.out.println("---------------");
+
+
 
 
             //testing findByName()
-            System.out.println(personDao.findByName("Svensson"));
+          //  System.out.println(personDao.findByName("Svensson"));
 
             //testing update() person
             //personDao.update(new Person(5, "Ebba", "Larsson"));
 
 
             //testing deleteById()
-            //boolean successfulDelete = personDao.delete(3);
+            //boolean successfulDelete = personDao.deleteById(3);
             //if(successfulDelete) System.out.println("Person deleted successfully!");
 
 
@@ -59,20 +57,6 @@ public class Main {
 
             //TodoItem item = new TodoItem("cleaning", "kitchen, bathroom", LocalDate.now().plusDays(3), true, personDao.findById(2).get());
             //System.out.println("Created todoItem: " + todoItemsDao.create(item));
-
-            //testing findAll()
-            System.out.println(todoItemsDao.findAll());
-            System.out.println("--------");
-
-            //testing findById()
-
-//            Optional<TodoItem> foundTodoItem = todoItemsDao.findById(1);
-//            if(foundTodoItem.isPresent()){
-//                System.out.println(foundTodoItem.get());
-//            } else {
-//                System.out.println("TodoItem not found");
-//            }
-
 
             //testing findByDoneStatus()
             //System.out.println(todoItemsDao.findByDoneStatus(done));

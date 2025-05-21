@@ -86,7 +86,7 @@ public class TodoItem {
 
     @Override
     public String toString() {
-        return "\nTodoItem{" +
+        return "TodoItem{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +

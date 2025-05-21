@@ -1,20 +1,17 @@
 package se.lexicon.dao.impl;
-
 import se.lexicon.dao.PersonDao;
 import se.lexicon.model.Person;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Optional;
 
-public class PersonDaoImpl implements PersonDao {
+public class PersonDaoImpl extends GenericDaoImpl<Person> implements PersonDao  {
 
     //fields
     private Connection connection;
 
     //constructor
     public PersonDaoImpl(Connection connection) {
-        this.connection = connection;
+        super(connection);
     }
 
     //methods
@@ -39,60 +36,33 @@ public class PersonDaoImpl implements PersonDao {
         return person;
     }
 
+
     @Override
-    public ArrayList<Person> findAll() {
-        ArrayList<Person> personList = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM person";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                personList.add(createPersonFromDB(resultSet));
-            }
-
-        } catch (SQLException e) {
-            System.err.println("❌Error finding all persons: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return personList;
+    public String getFindAllQuery() {
+        return "SELECT * FROM person";
     }
 
     @Override
-    public Optional<Person> findById(int id) {
-        String sqlQuery = "SELECT * FROM person WHERE person_id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+    public String getFindByIdQuery() {
+        return "SELECT * FROM person WHERE person_id = ?";
+    }
 
-                if (resultSet.next()) {
-                    return Optional.of(createPersonFromDB(resultSet));
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("❌Error finding person: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return Optional.empty();
+    @Override
+    public String getDeleteByIdQuery() {
+        return "DELETE FROM person WHERE person_id = ?";
     }
 
     @Override
     public ArrayList<Person> findByName(String name) {
         ArrayList<Person> personList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM person WHERE first_name LIKE ? OR last_name LIKE ?";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             preparedStatement.setString(1, "%" + name + "%");
             preparedStatement.setString(2, "%" + name + "%");
-
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    personList.add(createPersonFromDB(resultSet));
+                    personList.add(mapResultSetToEntity(resultSet));
                 }
-
             }
         } catch (SQLException e) {
             System.err.println("❌Error finding person: " + e.getMessage());
@@ -106,11 +76,9 @@ public class PersonDaoImpl implements PersonDao {
     public Person update(Person person) {
         String sqlQuery = "UPDATE person SET first_name = ?, last_name = ? WHERE person_id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-
             preparedStatement.setString(1, person.getFirstName());
             preparedStatement.setString(2, person.getLastName());
             preparedStatement.setInt(3, person.getId());
-
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.err.println("❌ Error updating person: " + e.getMessage());
@@ -119,25 +87,11 @@ public class PersonDaoImpl implements PersonDao {
     }
 
     @Override
-    public boolean delete(int id) {
-        String sqlQuery = "DELETE FROM person WHERE person_id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-
-            preparedStatement.setInt(1, id);
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("❌ Error deleting person: " + e.getMessage());
-        }
-        return false;
-    }
-
-    public Person createPersonFromDB(ResultSet resultSet) throws SQLException {
+    public Person mapResultSetToEntity(ResultSet rs) throws SQLException {
         return new Person(
-                resultSet.getInt("person_id"),
-                resultSet.getString("first_name"),
-                resultSet.getString("last_name")
+                rs.getInt("person_id"),
+                rs.getString("first_name"),
+                rs.getString("last_name")
         );
     }
-
 }
