@@ -132,7 +132,6 @@ public class TodoItemsDaoImpl extends GenericDaoImpl<TodoItem> implements TodoIt
         return todoItemList;
     }
 
-
     @Override
     public ArrayList<TodoItem> findByUnassignedTodoItems() {
         ArrayList<TodoItem> todoItemList = new ArrayList<>();

@@ -13,31 +13,6 @@ public class PersonDaoImpl extends GenericDaoImpl<Person> implements PersonDao  
     public PersonDaoImpl(Connection connection) {
         super(connection);
     }
-/*
-    //methods
-    @Override
-    public Person create(Person person) {
-        String sqlQuery = "INSERT INTO person (first_name, last_name) VALUES (?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, person.getFirstName());
-            preparedStatement.setString(2, person.getLastName());
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows > 0) {
-                ResultSet resultSet = preparedStatement.getGeneratedKeys();
-                if (resultSet.next()) {
-                    int generatedPersonId = resultSet.getInt(1);
-                    person.setId(generatedPersonId);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌Error creating person: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return person;
-    }
-
- */
-
 
     @Override
     public String getFindAllQuery() {
