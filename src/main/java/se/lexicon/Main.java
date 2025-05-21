@@ -8,6 +8,7 @@ import se.lexicon.model.Person;
 import se.lexicon.model.TodoItem;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class Main {
@@ -19,10 +20,14 @@ public class Main {
             TodoItemsDao todoItemsDao = new TodoItemsDaoImpl(mySQLConnection);
 
 
-            //testing to create a person to db
-//            Person createdPerson = personDao.create(new Person("Nils", "Larsson"));
-//            System.out.println("Created person: " + createdPerson);
-//            System.out.println("Person created successfully!");
+            //testing create()
+            Person createdPerson = personDao.create(new Person("Kalle", "Kula"));
+            System.out.println("Created person: " + createdPerson);
+            System.out.println("Person created successfully!");
+
+            TodoItem item = new TodoItem("cleaning", "kitchen, bathroom", LocalDate.now().plusDays(3), true, personDao.findById(2).get());
+            System.out.println("Created todoItem: " + todoItemsDao.create(item));
+
 
             //testing findAll()
             personDao.findAll().forEach(System.out::println);
@@ -38,25 +43,19 @@ public class Main {
             foundTodoItem.ifPresent(System.out::println);
             System.out.println("---------------");
 
+            //testing deleteById()
+//            boolean successfulDelete = personDao.deleteById(3);
+//            if(successfulDelete) System.out.println("Person deleted successfully!");
+//            successfulDelete = todoItemsDao.deleteById(3);
+//            if(successfulDelete) System.out.println("TodoItem deleted successfully!");
 
-
+            //testing update()
+            //personDao.update(new Person(5, "Ebba", "Larsson"));
+            //todoItemsDao.update(new TodoItem(5,"Task 3", "Description 3", LocalDate.now().plusDays(2), false, new Person(5, "Ebba", "Larsson")));
 
             //testing findByName()
           //  System.out.println(personDao.findByName("Svensson"));
 
-            //testing update() person
-            //personDao.update(new Person(5, "Ebba", "Larsson"));
-
-
-            //testing deleteById()
-            //boolean successfulDelete = personDao.deleteById(3);
-            //if(successfulDelete) System.out.println("Person deleted successfully!");
-
-
-            //testing creating todoItem
-
-            //TodoItem item = new TodoItem("cleaning", "kitchen, bathroom", LocalDate.now().plusDays(3), true, personDao.findById(2).get());
-            //System.out.println("Created todoItem: " + todoItemsDao.create(item));
 
             //testing findByDoneStatus()
             //System.out.println(todoItemsDao.findByDoneStatus(done));
@@ -77,13 +76,6 @@ public class Main {
 
             //testing findByUnassignedTodoItems
             //System.out.println(todoItemsDao.findByUnassignedTodoItems());
-
-            //testing update() todoItem
-            //todoItemsDao.update(new TodoItem(1, "garden", "cutting grass, trim hedges", LocalDate.now().plusDays(2), false, null));
-
-            //testing deleteById()
-//            boolean successfulDelete = todoItemsDao.deleteById(2);
-//            if(successfulDelete) System.out.println("todoItem deleted successfully!");
 
 
         } catch (SQLException e) {

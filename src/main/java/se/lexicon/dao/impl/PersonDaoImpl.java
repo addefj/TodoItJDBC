@@ -13,7 +13,7 @@ public class PersonDaoImpl extends GenericDaoImpl<Person> implements PersonDao  
     public PersonDaoImpl(Connection connection) {
         super(connection);
     }
-
+/*
     //methods
     @Override
     public Person create(Person person) {
@@ -36,6 +36,8 @@ public class PersonDaoImpl extends GenericDaoImpl<Person> implements PersonDao  
         return person;
     }
 
+ */
+
 
     @Override
     public String getFindAllQuery() {
@@ -53,15 +55,45 @@ public class PersonDaoImpl extends GenericDaoImpl<Person> implements PersonDao  
     }
 
     @Override
+    public String getCreateQuery() {
+        return "INSERT INTO person (first_name, last_name) VALUES (?, ?)";
+    }
+
+    @Override
+    public void setCreateStatement(PreparedStatement ps, Person person) throws SQLException {
+        ps.setString(1, person.getFirstName());
+        ps.setString(2, person.getLastName());
+    }
+
+    @Override
+    public void handleGeneratedKeys(ResultSet rs, Person person) throws SQLException {
+        int generatedId = rs.getInt(1);
+        person.setId(generatedId);
+    }
+
+    @Override
+    public String getUpdateQuery() {
+        return "UPDATE person SET first_name = ?, last_name = ? WHERE person_id = ?";
+    }
+
+    @Override
+    public void setUpdateStatement(PreparedStatement ps, Person person) throws SQLException {
+        ps.setString(1, person.getFirstName());
+        ps.setString(2, person.getLastName());
+        ps.setInt(3, person.getId());
+    }
+
+
+    @Override
     public ArrayList<Person> findByName(String name) {
         ArrayList<Person> personList = new ArrayList<>();
         String sqlQuery = "SELECT * FROM person WHERE first_name LIKE ? OR last_name LIKE ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setString(1, "%" + name + "%");
-            preparedStatement.setString(2, "%" + name + "%");
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    personList.add(mapResultSetToEntity(resultSet));
+        try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            ps.setString(1, "%" + name + "%");
+            ps.setString(2, "%" + name + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    personList.add(mapResultSetToEntity(rs));
                 }
             }
         } catch (SQLException e) {
@@ -72,19 +104,6 @@ public class PersonDaoImpl extends GenericDaoImpl<Person> implements PersonDao  
         return personList;
     }
 
-    @Override
-    public Person update(Person person) {
-        String sqlQuery = "UPDATE person SET first_name = ?, last_name = ? WHERE person_id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setString(1, person.getFirstName());
-            preparedStatement.setString(2, person.getLastName());
-            preparedStatement.setInt(3, person.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("❌ Error updating person: " + e.getMessage());
-        }
-        return person;
-    }
 
     @Override
     public Person mapResultSetToEntity(ResultSet rs) throws SQLException {

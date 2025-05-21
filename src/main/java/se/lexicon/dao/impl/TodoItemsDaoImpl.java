@@ -20,34 +20,6 @@ public class TodoItemsDaoImpl extends GenericDaoImpl<TodoItem> implements TodoIt
 
     //methods
     @Override
-    public TodoItem create(TodoItem todoItem) {
-        String sqlQuery = "INSERT INTO todo_item (title, description, deadline, done, assignee_id) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, todoItem.getTitle());
-            preparedStatement.setString(2, todoItem.getDescription());
-            preparedStatement.setDate(3, java.sql.Date.valueOf(todoItem.getDeadLine()));
-            preparedStatement.setBoolean(4, todoItem.isDone());
-            if (todoItem.getAssignee() == null) {
-                preparedStatement.setNull(5, java.sql.Types.INTEGER);
-            } else {
-                preparedStatement.setInt(5, todoItem.getAssignee().getId());
-            }
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows > 0) {
-                ResultSet resultSet = preparedStatement.getGeneratedKeys();
-                if (resultSet.next()) {
-                    int generatedTodoItemId = resultSet.getInt(1);
-                    todoItem.setId(generatedTodoItemId);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌Error creating todoItem: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return todoItem;
-    }
-
-    @Override
     public String getFindAllQuery() {
         return "SELECT * FROM todo_item ti LEFT JOIN person p ON ti.assignee_id = p.person_id";
     }
@@ -60,6 +32,131 @@ public class TodoItemsDaoImpl extends GenericDaoImpl<TodoItem> implements TodoIt
     @Override
     public String getDeleteByIdQuery() {
         return "DELETE FROM todo_item WHERE todo_id = ?";
+    }
+
+    @Override
+    public String getCreateQuery() {
+        return "INSERT INTO todo_item (title, description, deadline, done, assignee_id) VALUES (?, ?, ?, ?, ?)";
+    }
+
+    @Override
+    public void setCreateStatement(PreparedStatement ps, TodoItem todoItem) throws SQLException {
+        ps.setString(1, todoItem.getTitle());
+        ps.setString(2, todoItem.getDescription());
+        ps.setDate(3, java.sql.Date.valueOf(todoItem.getDeadLine()));
+        ps.setBoolean(4, todoItem.isDone());
+        if (todoItem.getAssignee() == null) {
+            ps.setNull(5, java.sql.Types.INTEGER);
+        } else {
+            ps.setInt(5, todoItem.getAssignee().getId());
+        }
+    }
+
+    @Override
+    public void handleGeneratedKeys(ResultSet rs, TodoItem todoItem) throws SQLException {
+        int generatedId = rs.getInt(1);
+        todoItem.setId(generatedId);
+    }
+
+    @Override
+    public String getUpdateQuery() {
+        return "UPDATE todo_item SET title = ?, description = ?, deadline = ?, done = ?, assignee_id = ? WHERE todo_id = ?";
+    }
+
+    @Override
+    public void setUpdateStatement(PreparedStatement ps, TodoItem todoItem) throws SQLException {
+        ps.setString(1, todoItem.getTitle());
+        ps.setString(2, todoItem.getDescription());
+        ps.setDate(3, java.sql.Date.valueOf(todoItem.getDeadLine()));
+        ps.setBoolean(4, todoItem.isDone());
+        if (todoItem.getAssignee() == null) {
+            ps.setNull(5, java.sql.Types.INTEGER);
+        } else {
+            ps.setInt(5, todoItem.getAssignee().getId());
+        }
+        ps.setInt(6, todoItem.getId());
+    }
+
+    @Override
+    public ArrayList<TodoItem> findByDoneStatus(boolean done) {
+        ArrayList<TodoItem> todoItemList = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM todo_item ti LEFT JOIN person p ON ti.assignee_id = p.person_id WHERE done = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            ps.setBoolean(1, done);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    todoItemList.add(mapResultSetToEntity(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌Error finding todoItems by done status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return todoItemList;
+    }
+
+    @Override
+    public ArrayList<TodoItem> findByAssignee(int id) {
+        ArrayList<TodoItem> todoItemList = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM todo_item ti LEFT JOIN person p ON ti.assignee_id = p.person_id WHERE person_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    todoItemList.add(mapResultSetToEntity(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌Error finding todoItems by assignee id: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return todoItemList;
+    }
+
+    @Override
+    public ArrayList<TodoItem> findByAssignee(Person person) {
+        ArrayList<TodoItem> todoItemList = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM todo_item ti JOIN person p ON ti.assignee_id = p.person_id WHERE person_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            ps.setInt(1, person.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    todoItemList.add(mapResultSetToEntity(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌Error finding todoItems by assignee: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return todoItemList;
+    }
+
+
+    @Override
+    public ArrayList<TodoItem> findByUnassignedTodoItems() {
+        ArrayList<TodoItem> todoItemList = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM todo_item WHERE assignee_id IS NULL";
+        try (PreparedStatement ps = connection.prepareStatement(sqlQuery)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Person assignee = null;
+                    todoItemList.add(new TodoItem(
+                            rs.getInt("todo_id"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getDate("deadline").toLocalDate(),
+                            rs.getBoolean("done"),
+                            assignee
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌Error finding unassigned todoItems: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return todoItemList;
     }
 
     @Override
@@ -81,111 +178,5 @@ public class TodoItemsDaoImpl extends GenericDaoImpl<TodoItem> implements TodoIt
                 rs.getBoolean("done"),
                 assignee
         );
-    }
-
-    @Override
-    public ArrayList<TodoItem> findByDoneStatus(boolean done) {
-        ArrayList<TodoItem> todoItemList = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM todo_item ti LEFT JOIN person p ON ti.assignee_id = p.person_id WHERE done = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setBoolean(1, done);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    todoItemList.add(mapResultSetToEntity(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌Error finding todoItems by done status: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return todoItemList;
-    }
-
-    @Override
-    public ArrayList<TodoItem> findByAssignee(int id) {
-        ArrayList<TodoItem> todoItemList = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM todo_item ti LEFT JOIN person p ON ti.assignee_id = p.person_id WHERE person_id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    todoItemList.add(mapResultSetToEntity(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌Error finding todoItems by assignee id: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return todoItemList;
-    }
-
-
-    @Override
-    public ArrayList<TodoItem> findByAssignee(Person person) {
-        ArrayList<TodoItem> todoItemList = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM todo_item ti JOIN person p ON ti.assignee_id = p.person_id WHERE person_id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setInt(1, person.getId());
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    todoItemList.add(mapResultSetToEntity(resultSet));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌Error finding todoItems by assignee: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return todoItemList;
-    }
-
-
-    @Override
-    public ArrayList<TodoItem> findByUnassignedTodoItems() {
-        ArrayList<TodoItem> todoItemList = new ArrayList<>();
-        String sqlQuery = "SELECT * FROM todo_item WHERE assignee_id IS NULL";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    Person assignee = null;
-                    todoItemList.add(new TodoItem(
-                            resultSet.getInt("todo_id"),
-                            resultSet.getString("title"),
-                            resultSet.getString("description"),
-                            resultSet.getDate("deadline").toLocalDate(),
-                            resultSet.getBoolean("done"),
-                            assignee
-                    ));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("❌Error finding unassigned todoItems: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return todoItemList;
-    }
-
-
-    @Override
-    public TodoItem update(TodoItem todoItem) {
-        String sqlQuery = "UPDATE todo_item SET title = ?, description = ?, deadline = ?, done = ?, assignee_id = ? WHERE todo_id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            preparedStatement.setString(1, todoItem.getTitle());
-            preparedStatement.setString(2, todoItem.getDescription());
-            preparedStatement.setDate(3, java.sql.Date.valueOf(todoItem.getDeadLine()));
-            preparedStatement.setBoolean(4, todoItem.isDone());
-            if (todoItem.getAssignee() == null) {
-                preparedStatement.setNull(5, java.sql.Types.INTEGER);
-            } else {
-                preparedStatement.setInt(5, todoItem.getAssignee().getId());
-            }
-            preparedStatement.setInt(6, todoItem.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("❌ Error updating todoItem: " + e.getMessage());
-        }
-        return todoItem;
     }
 }

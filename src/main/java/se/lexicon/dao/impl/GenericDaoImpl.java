@@ -1,5 +1,6 @@
 package se.lexicon.dao.impl;
 import se.lexicon.dao.BaseDao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,16 +22,39 @@ public abstract class GenericDaoImpl<T> implements BaseDao<T> {
     public abstract String getFindAllQuery();
     public abstract String getFindByIdQuery();
     public abstract String getDeleteByIdQuery();
+    public abstract String getCreateQuery();
+    public abstract void setCreateStatement(PreparedStatement ps, T entity) throws SQLException;
+    public abstract void handleGeneratedKeys(ResultSet rs, T entity) throws SQLException;
+    public abstract String getUpdateQuery();
+    public abstract void setUpdateStatement(PreparedStatement ps, T entity) throws SQLException;
     public abstract T mapResultSetToEntity(ResultSet rs) throws SQLException;
 
     //generic methods
     @Override
+    public T create(T entity) {
+        try (PreparedStatement ps = connection.prepareStatement(getCreateQuery(), PreparedStatement.RETURN_GENERATED_KEYS)) {
+            setCreateStatement(ps, entity);
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    handleGeneratedKeys(rs, entity);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("❌Error in generic create: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return entity;
+    }
+
+    @Override
     public ArrayList<T> findAll() {
         ArrayList<T> list = new ArrayList<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getFindAllQuery())) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                list.add(mapResultSetToEntity(resultSet));
+        try (PreparedStatement ps = connection.prepareStatement(getFindAllQuery())) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToEntity(rs));
             }
         } catch (SQLException e) {
             System.err.println("❌ Error in generic findAll: " + e.getMessage());
@@ -40,11 +64,11 @@ public abstract class GenericDaoImpl<T> implements BaseDao<T> {
     }
 
     public Optional<T> findById(int id){
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getFindByIdQuery())) {
-            preparedStatement.setInt(1, id);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Optional.of(mapResultSetToEntity(resultSet));
+        try (PreparedStatement ps = connection.prepareStatement(getFindByIdQuery())) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapResultSetToEntity(rs));
                 }
             }
         } catch (SQLException e) {
@@ -56,10 +80,21 @@ public abstract class GenericDaoImpl<T> implements BaseDao<T> {
     }
 
     @Override
+    public T update(T entity) {
+        try (PreparedStatement ps = connection.prepareStatement(getUpdateQuery())) {
+            setUpdateStatement(ps, entity);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("❌ Error in generic update: " + e.getMessage());
+        }
+        return entity;
+    }
+
+    @Override
     public boolean deleteById(int id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getDeleteByIdQuery())) {
-            preparedStatement.setInt(1, id);
-            return preparedStatement.executeUpdate() > 0;
+        try (PreparedStatement ps = connection.prepareStatement(getDeleteByIdQuery())) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("❌ Error in generic deleteById: " + e.getMessage());
         }
